@@ -3,4 +3,5 @@ This is an in progress project. After I wrote my first web scraper, I realized t
 attached to my method of collecting and filtering through every text element on a webpage. Athenaeum, written in c, will be
 an improvement on Upsilon.
 
-Current status: On par with Upsilon, minus the GUI search feature.
+## Current status
+On par with Upsilon, minus the GUI search feature.
