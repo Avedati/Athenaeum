@@ -10,6 +10,15 @@ GtkWidget *window, *fixed, *button, *label;
 struct vector *contents;
 int pos;
 
+/*
+  static void prevString(GtkWidget *widget, gpointer data)
+  
+  This function moves to the previous string (out of the parsed html),
+  and changes the widget's label accordingly.
+  
+  @param widget The text widget whose label we will set.
+  @param data A pointer to the Gtk Application data (required for this function).
+*/
 static void prevString(GtkWidget *widget, gpointer data) {
 	if(--pos < 0) {
 		pos = contents->len - 1;
@@ -17,12 +26,30 @@ static void prevString(GtkWidget *widget, gpointer data) {
 	gtk_label_set_text(GTK_LABEL(label), (char*)vector_get(contents,pos));
 }
 
+
+/*
+  static void nextString(GtkWidget *widget, gpointer data)
+  
+  This function moves to the next string (out of the parsed html),
+  and changes the widget's label accordingly.
+  
+  @param widget The text widget whose label we will set.
+  @param data A pointer to the Gtk Application data (required for this function).
+*/
 static void nextString(GtkWidget *widget, gpointer data) {
 	pos = (pos + 1) % contents->len;
 	gtk_label_set_text(GTK_LABEL(label), (char*)vector_get(contents,pos));
 }
 
 // https://developer.gnome.org/gtk3/stable/gtk-getting-started.html
+/*
+  static void activate(GtkApplication* app, gpointer user_data)
+  
+  This function is called to start our app
+  
+  @param app A pointer to our application
+  @param user_data A pointer to the Gtk Application data (required for this function).
+*/
 static void activate (GtkApplication* app, gpointer user_data) {
 	window = gtk_application_window_new (app);
 	gtk_window_set_default_size( GTK_WINDOW(window), WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -50,6 +77,18 @@ static void activate (GtkApplication* app, gpointer user_data) {
 }
 
 // https://stackoverflow.com/questions/2329571/c-libcurl-get-output-into-a-string
+/*
+  static size_t write_function(void* ptr, size_t size, size_t nmemb, void* mem)
+  
+  This function is called when CURL returns a string of text based on a call to a website.
+  We will use this function to copy the string of text to our custom string struct.
+  
+  @param ptr A pointer to the string.
+  @param size The size of a character (always 1).
+  @param nmemb The size of the string.
+  @param mem A pointer to our custom string struct (casted to a void pointer for this function).
+  @return The total number of bytes read (size * nmemb).
+*/
 static size_t write_function(void* ptr, size_t size, size_t nmemb, void* mem) {
 	struct string* string = (struct string*)mem;
 	string->str = realloc(string->str, strlen(string->str) + size*nmemb + sizeof(char));
@@ -59,6 +98,14 @@ static size_t write_function(void* ptr, size_t size, size_t nmemb, void* mem) {
 	return size * nmemb;
 }
 
+/*
+  struct vector* parse(struct string* string)
+  
+  This function parses the html content of a string, resulting in a vector of lexemes.
+  
+  @param string A pointer to our custom string struct.
+  @return A pointer to our custom vector struct, filled with lexemes, represented as c strings.
+*/
 struct vector* parse(struct string* string) {
 	struct vector* vec = vector_init();
 	for(int i=0;i<strlen(string->str);i++) {
@@ -81,6 +128,17 @@ struct vector* parse(struct string* string) {
 	return vec;
 }
 
+/*
+  int main(int argc, char** argv)
+  
+  This function is called at the start of our program.
+  We will use it to setup our gtk application, and curl
+  a website specified by our user through argv[1].
+  
+  @param argc The number of command line arguments provided ( >= 1 )
+  @param argv The command line arguments provided (represented as c strings).
+  @return The exit code of the program (should be 0 if everything went smoothly).
+*/
 int main (int argc, char **argv) {
 	GtkApplication *app;
 	int status;
